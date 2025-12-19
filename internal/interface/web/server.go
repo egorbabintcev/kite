@@ -3,6 +3,7 @@ package web
 import (
 	"context"
 	"fmt"
+	"kyte/internal/core"
 	"log/slog"
 	"net/http"
 	"time"
@@ -12,14 +13,18 @@ import (
 )
 
 type Server struct {
-	server *http.Server
-	logger *slog.Logger
+	server  *http.Server
+	logger  *slog.Logger
+	service *core.Service
 }
 
-func NewServer(l *slog.Logger) *Server {
+func NewServer(l *slog.Logger, s *core.Service) *Server {
 	l = l.With(slog.String("component", "web_server"))
 
-	return &Server{logger: l}
+	return &Server{
+		logger:  l,
+		service: s,
+	}
 }
 
 func (s *Server) Start(addr string) error {
@@ -30,7 +35,7 @@ func (s *Server) Start(addr string) error {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	h := newHandler(s.logger)
+	h := newHandler(s.logger, s.service)
 
 	r.Get("/{name}", h.handleGetResource)
 	r.Get("/{name}/*", h.handleGetResource)
