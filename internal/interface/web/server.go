@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 	"fmt"
-	"kyte/internal/core"
+	"kite/internal/core"
 	"log/slog"
 	"net/http"
 	"time"

@@ -3,7 +3,7 @@ package core
 import (
 	"context"
 	"io"
-	"kyte/internal/infrastructure/registry"
+	"kite/internal/infrastructure/registry"
 	"os"
 )
 

@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"kyte/internal/core"
-	"kyte/internal/infrastructure/cache"
-	"kyte/internal/infrastructure/registry"
-	"kyte/internal/interface/web"
+	"kite/internal/core"
+	"kite/internal/infrastructure/cache"
+	"kite/internal/infrastructure/registry"
+	"kite/internal/interface/web"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -15,14 +15,14 @@ import (
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
-	logger.Info("Starting kyte...")
+	logger.Info("Starting kite...")
 
-	cacheDir := os.Getenv("KYTE_CACHE_DIR")
+	cacheDir := os.Getenv("KITE_CACHE_DIR")
 	if cacheDir == "" {
-		cacheDir = "/opt/kyte/cache/packages"
+		cacheDir = "/opt/kite/cache/packages"
 	}
 
-	registryUrl := os.Getenv("KYTE_REGISTRY_URL")
+	registryUrl := os.Getenv("KITE_REGISTRY_URL")
 	if registryUrl == "" {
 		registryUrl = "https://registry.npmjs.org"
 	}

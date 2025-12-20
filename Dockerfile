@@ -6,8 +6,8 @@ COPY go.mod .
 COPY go.sum .
 RUN go mod download
 COPY . .
-RUN go build -o /kyte cmd/kyte/main.go
+RUN go build -o /kite cmd/kite/main.go
 
 FROM alpine:3
-COPY --from=builder kyte /bin/kyte
-ENTRYPOINT ["/bin/kyte"]
+COPY --from=builder kite /bin/kite
+ENTRYPOINT ["/bin/kite"]
