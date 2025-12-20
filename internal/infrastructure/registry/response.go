@@ -1,8 +1,8 @@
 package registry
 
 type GetPackageResponseFile struct {
-	Stream []byte
-	Path   string
+	Content []byte
+	Path    string
 }
 
 type GetPackageResponse struct {

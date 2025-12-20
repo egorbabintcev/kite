@@ -43,7 +43,7 @@ func (s *Service) GetResource(ctx context.Context, scope, name, version, path st
 		}
 
 		for _, f := range res.Files {
-			if err := s.cache.Put(filepath.Join(cacheKey, f.Path), f.Stream); err != nil {
+			if err := s.cache.Put(filepath.Join(cacheKey, f.Path), f.Content); err != nil {
 				return nil, fmt.Errorf("error putting resource to cache: %w", err)
 			}
 		}

@@ -58,8 +58,8 @@ func (c *HttpClient) FetchPackage(ctx context.Context, scope, name, version stri
 		}
 
 		f := GetPackageResponseFile{
-			Stream: buf,
-			Path:   trimmedPath,
+			Content: buf,
+			Path:    trimmedPath,
 		}
 		res.Files = append(res.Files, f)
 	}
