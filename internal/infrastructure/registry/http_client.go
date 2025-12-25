@@ -24,9 +24,15 @@ func (c *HttpClient) FetchPackage(ctx context.Context, scope, name, version stri
 		fullName = fmt.Sprintf("@%s/%s", scope, name)
 	}
 
-	fetchResponse, err := http.Get(fmt.Sprintf("%s/%s/-/%s-%s.tgz", c.url, fullName, name, version))
+	url := fmt.Sprintf("%s/%s/-/%s-%s.tgz", c.url, fullName, name, version)
+	fetchRequest, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("error fetching tarball: %w", err)
+		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+
+	fetchResponse, err := http.DefaultClient.Do(fetchRequest)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching package archive: %w", err)
 	}
 	defer fetchResponse.Body.Close()
 
