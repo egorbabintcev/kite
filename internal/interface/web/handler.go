@@ -1,9 +1,12 @@
 package web
 
 import (
+	"fmt"
 	"kite/internal/core"
 	"log/slog"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -34,5 +37,12 @@ func (h *handler) handleGetResource(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
-	http.ServeContent(w, r, res.Resource.Name, res.Resource.ModTime, res.Resource.Stream)
+	if res.Redirect != nil {
+		url := strings.Replace(r.URL.String(), url.PathEscape(version), url.PathEscape(res.Redirect.Version), 1)
+		fmt.Printf("%s", url)
+		http.Redirect(w, r, url, http.StatusMovedPermanently)
+		return
+	}
+
+	http.ServeContent(w, r, res.Serve.Name, res.Serve.ModTime, res.Serve.Stream)
 }

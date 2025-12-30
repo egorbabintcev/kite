@@ -47,6 +47,17 @@ func (s *Service) GetResource(ctx context.Context, scope, name, version, path st
 		return nil, fmt.Errorf("error resolving version: %w", err)
 	}
 
+	if resolvedVersion != version {
+		return &GetResourceResponse{
+			Redirect: &ResourceRedirect{
+				Scope:   scope,
+				Name:    name,
+				Version: resolvedVersion,
+				Path:    path,
+			},
+		}, nil
+	}
+
 	cacheKey := filepath.Join(fullName, resolvedVersion)
 
 	if exists := s.cache.Exists(cacheKey); !exists {
@@ -68,7 +79,7 @@ func (s *Service) GetResource(ctx context.Context, scope, name, version, path st
 	}
 
 	return &GetResourceResponse{
-		Resource: Resource{
+		Serve: &ResourceServe{
 			Stream:  rsc,
 			Name:    info.Name(),
 			ModTime: info.ModTime(),
