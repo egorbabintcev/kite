@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log/slog"
 	"path/filepath"
+	"sort"
+
+	"github.com/Masterminds/semver/v3"
 )
 
 var (
@@ -34,10 +37,20 @@ func (s *Service) GetResource(ctx context.Context, scope, name, version, path st
 		fullName = fmt.Sprintf("@%s/%s", scope, name)
 	}
 
-	cacheKey := filepath.Join(fullName, version)
+	meta, err := s.registry.FetchMetadata(ctx, scope, name)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching resource metadata: %w", err)
+	}
+
+	resolvedVersion, err := s.resolveVersion(version, meta.Metadata.Versions, meta.Metadata.Tags)
+	if err != nil {
+		return nil, fmt.Errorf("error resolving version: %w", err)
+	}
+
+	cacheKey := filepath.Join(fullName, resolvedVersion)
 
 	if exists := s.cache.Exists(cacheKey); !exists {
-		res, err := s.registry.FetchPackage(ctx, scope, name, version)
+		res, err := s.registry.FetchPackage(ctx, scope, name, resolvedVersion)
 		if err != nil {
 			return nil, fmt.Errorf("error fetching resource: %w", err)
 		}
@@ -61,4 +74,43 @@ func (s *Service) GetResource(ctx context.Context, scope, name, version, path st
 			ModTime: info.ModTime(),
 		},
 	}, nil
+}
+
+func (s *Service) resolveVersion(version string, versions []string, tags map[string]string) (string, error) {
+	if v, ok := tags[version]; ok {
+		return v, nil
+	}
+
+	versionSet := make(map[string]struct{}, len(versions))
+	for _, v := range versions {
+		versionSet[v] = struct{}{}
+	}
+
+	if _, ok := versionSet[version]; ok {
+		return version, nil
+	}
+
+	constraint, err := semver.NewConstraint(version)
+	if err != nil {
+		return "", fmt.Errorf("failed to create constraint: %w", err)
+	}
+
+	matched := make([]*semver.Version, 0)
+	for _, v := range versions {
+		sv, err := semver.NewVersion(v)
+		if err != nil {
+			continue
+		}
+
+		if constraint.Check(sv) {
+			matched = append(matched, sv)
+		}
+	}
+
+	if len(matched) == 0 {
+		return "", fmt.Errorf("failed to match constraint")
+	}
+
+	sort.Sort(semver.Collection(matched))
+	return matched[len(matched)-1].Original(), nil
 }

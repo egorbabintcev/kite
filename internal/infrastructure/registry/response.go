@@ -8,3 +8,12 @@ type GetPackageResponseFile struct {
 type GetPackageResponse struct {
 	Files []GetPackageResponseFile
 }
+
+type GetMetadataResponseMetadata struct {
+	Versions []string
+	Tags     map[string]string
+}
+
+type GetMetadataResponse struct {
+	Metadata GetMetadataResponseMetadata
+}

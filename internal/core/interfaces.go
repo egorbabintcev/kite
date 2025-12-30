@@ -15,4 +15,5 @@ type Cache interface {
 
 type RegistryClient interface {
 	FetchPackage(ctx context.Context, scope, name, version string) (*registry.GetPackageResponse, error)
+	FetchMetadata(ctx context.Context, scope, name string) (*registry.GetMetadataResponse, error)
 }
