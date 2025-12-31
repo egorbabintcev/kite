@@ -86,6 +86,10 @@ func (c *HttpClient) FetchMetadata(ctx context.Context, scope, name string) (*Ge
 	}
 	defer fetchResponse.Body.Close()
 
+	if fetchResponse.StatusCode != 200 {
+		return nil, fmt.Errorf("registry error: %d", fetchResponse.StatusCode)
+	}
+
 	var resData struct {
 		Versions map[string]json.RawMessage `json:"versions"`
 		Tags     map[string]string          `json:"dist-tags"`
