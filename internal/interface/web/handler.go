@@ -6,7 +6,6 @@ import (
 	"log/slog"
 	"net/http"
 	"net/url"
-	"strings"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -38,11 +37,19 @@ func (h *handler) handleGetResource(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	if res.Redirect != nil {
-		url := strings.Replace(r.URL.String(), url.PathEscape(version), url.PathEscape(res.Redirect.Version), 1)
-		fmt.Printf("%s", url)
-		http.Redirect(w, r, url, http.StatusMovedPermanently)
+		url := fmt.Sprintf("/%s@%s/%s", url.PathEscape(res.Redirect.Name), url.PathEscape(res.Redirect.Version), res.Redirect.Path)
+
+		if res.Redirect.Scope != "" {
+			url = fmt.Sprintf("/@%s%s", res.Redirect.Scope, url)
+		}
+
+		w.Header().Set("Cache-Control", "public, max-age=60, stale-while-revalidate=30")
+
+		http.Redirect(w, r, url, http.StatusFound)
 		return
 	}
+
+	w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
 
 	http.ServeContent(w, r, res.Serve.Name, res.Serve.ModTime, res.Serve.Stream)
 }
