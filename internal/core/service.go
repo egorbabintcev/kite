@@ -42,6 +42,10 @@ func (s *Service) GetResource(ctx context.Context, scope, name, version, path st
 		return nil, fmt.Errorf("error fetching resource metadata: %w", err)
 	}
 
+	if version == "" {
+		version = "latest"
+	}
+
 	resolvedVersion, err := s.resolveVersion(version, meta.Metadata.Versions, meta.Metadata.Tags)
 	if err != nil {
 		return nil, fmt.Errorf("error resolving version: %w", err)
