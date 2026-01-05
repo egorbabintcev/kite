@@ -46,7 +46,7 @@ docker run -d \
 ```yaml
 services:
   kite:
-    container_name: kite
+    image: egorbabintsev/kite:latest
     ports:
       - "8000:8000"
 ```
