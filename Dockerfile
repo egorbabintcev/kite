@@ -1,13 +1,12 @@
-FROM golang:1.25-alpine AS builder
+FROM golang:1.25-alpine AS dev
 
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod .
 COPY go.sum .
-RUN go mod download
-COPY . .
-RUN go build -o /kite cmd/kite/main.go
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
 
-FROM alpine:3
-COPY --from=builder kite /bin/kite
-ENTRYPOINT ["/bin/kite"]
+COPY . .
+
+CMD ["go", "run", "./cmd/kite/main.go"]
