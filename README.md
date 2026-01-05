@@ -16,19 +16,19 @@ http://localhost:8000/:package@:version/:file
 
 For example:
 
-- /preact@10.26.4/dist/preact.min.js
-- /react@18.3.1/umd/react.production.min.js
-- /three@0.174.0/build/three.module.min.js
+- `/preact@10.26.4/dist/preact.min.js`
+- `/react@18.3.1/umd/react.production.min.js`
+- `/three@0.174.0/build/three.module.min.js`
 
 You can also use any valid semver range or npm tag:
 
-- /preact@latest/dist/preact.min.js
-- /react@^18/umd/react.production.min.js
+- `/preact@latest/dist/preact.min.js`
+- `/react@^18/umd/react.production.min.js`
 
 If you don't specify a version, the latest tag is used by default.
 
-- /preact/dist/preact.min.js
-- /vue/dist/vue.esm-browser.prod.js
+- `/preact/dist/preact.min.js`
+- `/vue/dist/vue.esm-browser.prod.js`
 
 ## Quick start
 
