@@ -1,7 +1,7 @@
 package serving
 
-import "kite/internal/domain/shared_kernel"
+import "kite/internal/domain/shared"
 
 type PackageRepository interface {
-	Get(id shared_kernel.PackageID) (*Package, error)
+	Get(id shared.PackageID, version Version) (*Package, error)
 }

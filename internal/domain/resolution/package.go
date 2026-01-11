@@ -2,16 +2,16 @@ package resolution
 
 import (
 	"fmt"
-	"kite/internal/domain/shared_kernel"
+	"kite/internal/domain/shared"
 )
 
 type Package struct {
-	ID       shared_kernel.PackageID
+	ID       shared.PackageID
 	Versions []Version
 	Tags     map[VersionTag]Version
 }
 
-func NewPackage(ID shared_kernel.PackageID, versions []Version, tags map[VersionTag]Version) (*Package, error) {
+func NewPackage(ID shared.PackageID, versions []Version, tags map[VersionTag]Version) (*Package, error) {
 	if len(versions) == 0 {
 		return nil, fmt.Errorf("package must have at least one version")
 	}
