@@ -33,11 +33,19 @@ RUN go build \
     -o /kite \
     ./cmd/kite/main.go
 
-FROM gcr.io/distroless/static-debian13 AS prod
+FROM alpine:3.20 AS prod
 
-USER nonroot:nonroot
+RUN addgroup -S kite \
+    && adduser -S -G kite -u 10001 kite
+
+RUN mkdir -p /var/lib/kite \
+    && chown -R kite:kite /var/lib/kite
+
+USER kite:kite
 
 COPY --from=builder /kite /kite
 
+VOLUME ["/var/lib/kite"]
 EXPOSE 8000
+
 ENTRYPOINT ["/kite"]

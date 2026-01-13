@@ -7,6 +7,6 @@ run:
 		-it \
 		--rm \
 		-p 8000:8000 \
-		-v $(pwd)/kite_cache:/opt/kite/cache/packages \
+		-v $(pwd)/kite_cache:/var/lib/kite/cache/packages \
 		--name kite-dev \
 		kite-dev

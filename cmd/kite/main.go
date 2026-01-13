@@ -17,10 +17,7 @@ func main() {
 
 	logger.Info("Starting kite...")
 
-	cacheDir := os.Getenv("KITE_CACHE_DIR")
-	if cacheDir == "" {
-		cacheDir = "/opt/kite/cache/packages"
-	}
+	cacheDir := "/var/lib/kite/cache/packages"
 
 	registryUrl := os.Getenv("KITE_REGISTRY_URL")
 	if registryUrl == "" {
