@@ -35,14 +35,6 @@ RUN go build \
 
 FROM alpine:3.20 AS prod
 
-RUN addgroup -S kite \
-    && adduser -S -G kite -u 10001 kite
-
-RUN mkdir -p /var/lib/kite \
-    && chown -R kite:kite /var/lib/kite
-
-USER kite:kite
-
 COPY --from=builder /kite /kite
 
 VOLUME ["/var/lib/kite"]
