@@ -4,7 +4,8 @@ run:
 		--progress none \
 		--target dev . && \
 	docker run \
-	  --rm \
+		-it \
+		--rm \
 		-p 8000:8000 \
 		-v $(pwd)/kite_cache:/opt/kite/cache/packages \
 		--name kite-dev \
