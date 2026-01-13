@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.2.0 (2025-01-14)
+
+### Fixed
+
+- Fix permission error when trying to get a package
+
 ## v0.1.0 (2025-01-05)
 
 - Initial release of the project
