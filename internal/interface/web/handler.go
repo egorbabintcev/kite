@@ -30,6 +30,7 @@ func (h *handler) handleGetResource(w http.ResponseWriter, r *http.Request) {
 
 	res, err := h.service.GetResource(r.Context(), scope, name, version, path)
 	if err != nil {
+		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
