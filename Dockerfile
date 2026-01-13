@@ -5,7 +5,7 @@ WORKDIR /app
 COPY go.mod .
 COPY go.sum .
 RUN --mount=type=cache,target=/go/pkg/mod \
-    go mod download
+  go mod download
 
 COPY . .
 
@@ -18,8 +18,8 @@ FROM golang:1.25-alpine AS builder
 WORKDIR /build
 
 ENV CGO_ENABLED=0 \
-    GOOS=linux \
-    GOARCH=amd64
+  GOOS=linux \
+  GOARCH=amd64
 
 COPY go.mod .
 COPY go.sum .
@@ -28,10 +28,10 @@ RUN go mod download
 COPY . .
 
 RUN go build \
-    -trimpath \
-    -ldflags="-s -w" \
-    -o /kite \
-    ./cmd/kite/main.go
+  -trimpath \
+  -ldflags="-s -w" \
+  -o /kite \
+  ./cmd/kite/main.go
 
 FROM alpine:3.20 AS prod
 
