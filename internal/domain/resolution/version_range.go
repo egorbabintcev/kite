@@ -1,8 +1,6 @@
 package resolution
 
 import (
-	"fmt"
-
 	"github.com/Masterminds/semver/v3"
 )
 
@@ -12,9 +10,13 @@ type VersionRange struct {
 }
 
 func NewVersionRange(raw string) (VersionRange, error) {
+	if raw == "" {
+		return VersionRange{}, ErrVersionRangeEmpty
+	}
+
 	constraint, err := semver.NewConstraint(raw)
 	if err != nil {
-		return VersionRange{}, fmt.Errorf("failed to create version range")
+		return VersionRange{}, ErrVersionRangeInvalid
 	}
 
 	return VersionRange{
@@ -29,4 +31,8 @@ func (vr VersionRange) String() string {
 
 func (vr VersionRange) Match(version Version) bool {
 	return vr.constraint.Check(version.version)
+}
+
+func (vr VersionRange) Equal(other VersionRange) bool {
+	return vr.String() == other.String()
 }

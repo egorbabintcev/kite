@@ -1,8 +1,8 @@
 package resolution
 
 import (
-	"fmt"
 	"kite/internal/domain/shared"
+	"slices"
 )
 
 type Package struct {
@@ -13,18 +13,18 @@ type Package struct {
 
 func NewPackage(ID shared.PackageID, versions []Version, tags map[VersionTag]Version) (*Package, error) {
 	if len(versions) == 0 {
-		return nil, fmt.Errorf("package must have at least one version")
+		return nil, ErrPackageNoVersions
 	}
 
 	hasLatest := false
 	for tag := range tags {
-		if tag.IsLatestTag() {
+		if tag.IsLatest() {
 			hasLatest = true
 			break
 		}
 	}
 	if !hasLatest {
-		return nil, fmt.Errorf("package must have a latest tag")
+		return nil, ErrPackageNoLatestTag
 	}
 
 	return &Package{
@@ -32,4 +32,36 @@ func NewPackage(ID shared.PackageID, versions []Version, tags map[VersionTag]Ver
 		Versions: versions,
 		Tags:     tags,
 	}, nil
+}
+
+func (p *Package) ResolveVersionQuery(query VersionQuery) (Version, error) {
+	if query.Tag != nil {
+		if version, ok := p.Tags[*query.Tag]; ok {
+			return version, nil
+		} else {
+			return Version{}, ErrVersionNotFound
+		}
+	}
+
+	if query.Range != nil {
+		rng := *query.Range
+		candidates := make([]Version, 0)
+
+		for _, version := range p.Versions {
+			if rng.Match(version) {
+				candidates = append(candidates, version)
+			}
+		}
+
+		if len(candidates) == 0 {
+			return Version{}, ErrVersionNotFound
+		}
+
+		slices.SortFunc(candidates, func(a Version, b Version) int {
+			return a.Compare(b)
+		})
+		return candidates[len(candidates)-1], nil
+	}
+
+	return Version{}, ErrVersionNotFound
 }

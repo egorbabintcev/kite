@@ -1,7 +1,5 @@
 package resolution
 
-import "fmt"
-
 const LatestTagName = "latest"
 
 type VersionTag struct {
@@ -10,12 +8,12 @@ type VersionTag struct {
 
 func NewVersionTag(name string) (VersionTag, error) {
 	if name == "" {
-		return VersionTag{}, fmt.Errorf("tag name cannot be empty")
+		return VersionTag{}, ErrVersionTagEmpty
 	}
 
 	return VersionTag{name: name}, nil
 }
 
-func (vt VersionTag) IsLatestTag() bool {
+func (vt VersionTag) IsLatest() bool {
 	return vt.name == LatestTagName
 }

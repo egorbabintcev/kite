@@ -1,8 +1,6 @@
 package resolution
 
 import (
-	"fmt"
-
 	"github.com/Masterminds/semver/v3"
 )
 
@@ -12,9 +10,13 @@ type Version struct {
 }
 
 func NewVersion(raw string) (Version, error) {
+	if raw == "" {
+		return Version{}, ErrVersionEmpty
+	}
+
 	version, err := semver.StrictNewVersion(raw)
 	if err != nil {
-		return Version{}, fmt.Errorf("failed to create version")
+		return Version{}, ErrVersionInvalid
 	}
 
 	return Version{
