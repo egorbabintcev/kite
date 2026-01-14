@@ -7,7 +7,12 @@ type VersionQuery struct {
 
 func NewVersionQuery(raw string) (VersionQuery, error) {
 	if raw == "" {
-		return VersionQuery{}, ErrVersionQueryEmpty
+		t, err := NewVersionTag(LatestTagName)
+		if err != nil {
+			return VersionQuery{}, err
+		}
+
+		return VersionQuery{Tag: &t}, nil
 	}
 
 	r, err := NewVersionRange(raw)

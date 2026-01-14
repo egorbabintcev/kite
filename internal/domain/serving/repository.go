@@ -1,7 +1,10 @@
 package serving
 
-import "kite/internal/domain/shared"
+import (
+	"context"
+	"kite/internal/domain/shared"
+)
 
-type PackageRepository interface {
-	Get(id shared.PackageID, version Version) (*Package, error)
+type PackageArtifactRepository interface {
+	Get(ctx context.Context, id shared.PackageID, version Version, path PackageArtifactPath) (*PackageArtifact, error)
 }

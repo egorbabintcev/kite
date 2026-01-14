@@ -3,7 +3,7 @@ package web
 import (
 	"context"
 	"fmt"
-	"kite/internal/core"
+	"kite/internal/application/resource"
 	"log/slog"
 	"net/http"
 	"time"
@@ -15,10 +15,10 @@ import (
 type Server struct {
 	server  *http.Server
 	logger  *slog.Logger
-	service *core.Service
+	service *resource.GetResourceUC
 }
 
-func NewServer(l *slog.Logger, s *core.Service) *Server {
+func NewServer(l *slog.Logger, s *resource.GetResourceUC) *Server {
 	l = l.With(slog.String("component", "web_server"))
 
 	return &Server{

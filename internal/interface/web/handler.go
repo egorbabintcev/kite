@@ -2,7 +2,7 @@ package web
 
 import (
 	"fmt"
-	"kite/internal/core"
+	"kite/internal/application/resource"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -11,14 +11,14 @@ import (
 )
 
 type handler struct {
-	logger  *slog.Logger
-	service *core.Service
+	logger        *slog.Logger
+	getResourceUC *resource.GetResourceUC
 }
 
-func newHandler(l *slog.Logger, s *core.Service) *handler {
+func newHandler(l *slog.Logger, uc *resource.GetResourceUC) *handler {
 	return &handler{
-		logger:  l,
-		service: s,
+		logger:        l,
+		getResourceUC: uc,
 	}
 }
 
@@ -28,7 +28,12 @@ func (h *handler) handleGetResource(w http.ResponseWriter, r *http.Request) {
 	version := chi.URLParam(r, "version")
 	path := chi.URLParam(r, "*")
 
-	res, err := h.service.GetResource(r.Context(), scope, name, version, path)
+	res, err := h.getResourceUC.Execute(r.Context(), resource.GetResourceUCRequest{
+		Name:         name,
+		Scope:        scope,
+		VersionQuery: version,
+		Path:         path,
+	})
 	if err != nil {
 		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate")
 		http.Error(w, err.Error(), http.StatusInternalServerError)

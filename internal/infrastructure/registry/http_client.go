@@ -71,10 +71,8 @@ func (c *HttpClient) FetchPackage(ctx context.Context, scope, name, version stri
 	return &res, nil
 }
 
-func (c *HttpClient) FetchMetadata(ctx context.Context, scope, name string) (*GetMetadataResponse, error) {
-	fullName := c.resolveFullName(scope, name)
-
-	url := fmt.Sprintf("%s/%s", c.url, fullName)
+func (c *HttpClient) FetchMetadata(ctx context.Context, id string) (*GetMetadataResponse, error) {
+	url := fmt.Sprintf("%s/%s", c.url, id)
 	fetchRequest, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)

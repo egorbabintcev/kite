@@ -2,9 +2,10 @@ package main
 
 import (
 	"context"
-	"kite/internal/core"
+	"kite/internal/application/resource"
 	"kite/internal/infrastructure/cache"
 	"kite/internal/infrastructure/registry"
+	"kite/internal/infrastructure/repository"
 	"kite/internal/interface/web"
 	"log/slog"
 	"os"
@@ -26,8 +27,10 @@ func main() {
 
 	cache := cache.NewFS(cacheDir)
 	registry := registry.NewHttpClient(registryUrl)
-	core := core.NewService(logger, cache, registry)
-	srv := web.NewServer(logger, core)
+	resolutionRepo := repository.NewPackageRepository(registry)
+	servingRepo := repository.NewPackageArtifactRepository(registry, cache)
+	getResourceUC := resource.NewGetResourceUC(resolutionRepo, servingRepo)
+	srv := web.NewServer(logger, getResourceUC)
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)

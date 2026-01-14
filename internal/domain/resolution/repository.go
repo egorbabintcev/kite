@@ -1,7 +1,10 @@
 package resolution
 
-import "kite/internal/domain/shared"
+import (
+	"context"
+	"kite/internal/domain/shared"
+)
 
 type PackageRepository interface {
-	Get(id shared.PackageID) (*Package, error)
+	Get(ctx context.Context, id shared.PackageID) (*Package, error)
 }

@@ -13,4 +13,5 @@ var (
 	ErrVersionQueryEmpty   = errors.New("version query cannot be empty")
 	ErrVersionQueryInvalid = errors.New("invalid version query")
 	ErrVersionNotFound     = errors.New("version not found")
+	ErrPackageNotFound     = errors.New("package not found")
 )

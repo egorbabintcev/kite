@@ -23,6 +23,14 @@ func NewPackageID(scope string, name string) (PackageID, error) {
 	}, nil
 }
 
+func (p PackageID) Scope() string {
+	return p.scope
+}
+
+func (p PackageID) Name() string {
+	return p.name
+}
+
 func (p PackageID) String() string {
 	if p.scope != "" {
 		return fmt.Sprintf("@%s/%s", p.scope, p.name)

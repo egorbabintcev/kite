@@ -1,9 +1,16 @@
-package core
+package resource
 
 import (
 	"io"
 	"time"
 )
+
+type GetResourceUCRequest struct {
+	Name         string
+	Scope        string
+	VersionQuery string
+	Path         string
+}
 
 type ResourceServe struct {
 	Stream  io.ReadSeekCloser
@@ -18,7 +25,7 @@ type ResourceRedirect struct {
 	Path    string
 }
 
-type GetResourceResponse struct {
+type GetResourceUCResponse struct {
 	Serve    *ResourceServe
 	Redirect *ResourceRedirect
 }

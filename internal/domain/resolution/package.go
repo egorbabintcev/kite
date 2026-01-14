@@ -1,6 +1,7 @@
 package resolution
 
 import (
+	"fmt"
 	"kite/internal/domain/shared"
 	"slices"
 )
@@ -45,6 +46,9 @@ func (p *Package) ResolveVersionQuery(query VersionQuery) (Version, error) {
 
 	if query.Range != nil {
 		rng := *query.Range
+
+		v, _ := NewVersion("20.0.0")
+		fmt.Printf("%v", rng.Match(v))
 		candidates := make([]Version, 0)
 
 		for _, version := range p.Versions {
