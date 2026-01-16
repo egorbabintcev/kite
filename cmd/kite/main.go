@@ -2,11 +2,12 @@ package main
 
 import (
 	"context"
-	"kite/internal/application/resource"
+	application "kite/internal/application/get_package_artifact"
 	"kite/internal/infrastructure/cache"
 	"kite/internal/infrastructure/registry"
 	"kite/internal/infrastructure/repository"
 	"kite/internal/interface/web"
+	"kite/internal/interface/web/handlers"
 	"log/slog"
 	"os"
 	"os/signal"
@@ -27,10 +28,15 @@ func main() {
 
 	cache := cache.NewFS(cacheDir)
 	registry := registry.NewHttpClient(registryUrl)
-	resolutionRepo := repository.NewPackageRepository(registry)
-	servingRepo := repository.NewPackageArtifactRepository(registry, cache)
-	getResourceUC := resource.NewGetResourceUC(resolutionRepo, servingRepo)
-	srv := web.NewServer(logger, getResourceUC)
+
+	packageRepo := repository.NewPackageRepository(registry)
+	artifactRepo := repository.NewPackageArtifactRepository(registry, cache)
+
+	getPackageArtifact := application.NewGetPackageArtifactUC(packageRepo, artifactRepo)
+
+	srv := web.NewServer(logger,
+		handlers.NewGetPackageArtifactHandler(logger, getPackageArtifact),
+	)
 
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)

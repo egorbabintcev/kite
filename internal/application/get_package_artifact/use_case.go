@@ -1,4 +1,4 @@
-package resource
+package application
 
 import (
 	"context"
@@ -7,25 +7,25 @@ import (
 	"kite/internal/domain/shared"
 )
 
-type GetResourceUC struct {
-	resolutionRepo resolution.PackageRepository
-	servingRepo    serving.PackageArtifactRepository
+type GetPackageArtifactUC struct {
+	packageRepo  resolution.PackageRepository
+	artifactRepo serving.PackageArtifactRepository
 }
 
-func NewGetResourceUC(resolutionRepo resolution.PackageRepository, servingRepo serving.PackageArtifactRepository) *GetResourceUC {
-	return &GetResourceUC{
-		resolutionRepo: resolutionRepo,
-		servingRepo:    servingRepo,
+func NewGetPackageArtifactUC(pr resolution.PackageRepository, ar serving.PackageArtifactRepository) *GetPackageArtifactUC {
+	return &GetPackageArtifactUC{
+		packageRepo:  pr,
+		artifactRepo: ar,
 	}
 }
 
-func (uc *GetResourceUC) Execute(ctx context.Context, r GetResourceUCRequest) (*GetResourceUCResponse, error) {
+func (uc *GetPackageArtifactUC) Execute(ctx context.Context, r GetPackageArtifactRequest) (*GetPackageArtifactResponse, error) {
 	id, err := shared.NewPackageID(r.Scope, r.Name)
 	if err != nil {
 		return nil, err
 	}
 
-	pkg, err := uc.resolutionRepo.Get(ctx, id)
+	pkg, err := uc.packageRepo.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +41,8 @@ func (uc *GetResourceUC) Execute(ctx context.Context, r GetResourceUCRequest) (*
 	}
 
 	if version.String() != r.VersionQuery {
-		return &GetResourceUCResponse{
-			Redirect: &ResourceRedirect{
+		return &GetPackageArtifactResponse{
+			Redirect: &ArtifactRedirect{
 				Name:    id.Name(),
 				Scope:   id.Scope(),
 				Version: version.String(),
@@ -56,13 +56,13 @@ func (uc *GetResourceUC) Execute(ctx context.Context, r GetResourceUCRequest) (*
 		return nil, err
 	}
 
-	artifact, err := uc.servingRepo.Get(ctx, id, v, r.Path)
+	artifact, err := uc.artifactRepo.Get(ctx, id, v, r.Path)
 	if err != nil {
 		return nil, err
 	}
 
-	return &GetResourceUCResponse{
-		Serve: &ResourceServe{
+	return &GetPackageArtifactResponse{
+		Serve: &ArtifactServe{
 			Name:    artifact.Name(),
 			ModTime: artifact.ModTime(),
 			Stream:  artifact.Content(),

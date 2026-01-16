@@ -3,7 +3,6 @@ package web
 import (
 	"context"
 	"fmt"
-	"kite/internal/application/resource"
 	"log/slog"
 	"net/http"
 	"time"
@@ -13,17 +12,21 @@ import (
 )
 
 type Server struct {
-	server  *http.Server
-	logger  *slog.Logger
-	service *resource.GetResourceUC
+	server   *http.Server
+	logger   *slog.Logger
+	handlers []RouteHandler
 }
 
-func NewServer(l *slog.Logger, s *resource.GetResourceUC) *Server {
+type RouteHandler interface {
+	Route(r chi.Router)
+}
+
+func NewServer(l *slog.Logger, hs ...RouteHandler) *Server {
 	l = l.With(slog.String("component", "web_server"))
 
 	return &Server{
-		logger:  l,
-		service: s,
+		logger:   l,
+		handlers: hs,
 	}
 }
 
@@ -35,17 +38,9 @@ func (s *Server) Start(addr string) error {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	h := newHandler(s.logger, s.service)
-
-	r.Get("/{name}", h.handleGetResource)
-	r.Get("/{name}/*", h.handleGetResource)
-	r.Get("/{name}@{version}", h.handleGetResource)
-	r.Get("/{name}@{version}/*", h.handleGetResource)
-
-	r.Get("/@{scope}/{name}", h.handleGetResource)
-	r.Get("/@{scope}/{name}/*", h.handleGetResource)
-	r.Get("/@{scope}/{name}@{version}", h.handleGetResource)
-	r.Get("/@{scope}/{name}@{version}/*", h.handleGetResource)
+	for _, handler := range s.handlers {
+		handler.Route(r)
+	}
 
 	srv := &http.Server{
 		Addr:    addr,

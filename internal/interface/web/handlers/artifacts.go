@@ -1,8 +1,8 @@
-package web
+package handlers
 
 import (
 	"fmt"
-	"kite/internal/application/resource"
+	application "kite/internal/application/get_package_artifact"
 	"log/slog"
 	"net/http"
 	"net/url"
@@ -10,25 +10,37 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type handler struct {
-	logger        *slog.Logger
-	getResourceUC *resource.GetResourceUC
+type GetPackageArtifactHandler struct {
+	logger *slog.Logger
+	uc     application.GetPackageArtifact
 }
 
-func newHandler(l *slog.Logger, uc *resource.GetResourceUC) *handler {
-	return &handler{
-		logger:        l,
-		getResourceUC: uc,
+func NewGetPackageArtifactHandler(l *slog.Logger, uc application.GetPackageArtifact) *GetPackageArtifactHandler {
+	return &GetPackageArtifactHandler{
+		logger: l,
+		uc:     uc,
 	}
 }
 
-func (h *handler) handleGetResource(w http.ResponseWriter, r *http.Request) {
+func (h *GetPackageArtifactHandler) Route(r chi.Router) {
+	r.Get("/{name}", h.handle)
+	r.Get("/{name}/*", h.handle)
+	r.Get("/{name}@{version}", h.handle)
+	r.Get("/{name}@{version}/*", h.handle)
+
+	r.Get("/@{scope}/{name}", h.handle)
+	r.Get("/@{scope}/{name}/*", h.handle)
+	r.Get("/@{scope}/{name}@{version}", h.handle)
+	r.Get("/@{scope}/{name}@{version}/*", h.handle)
+}
+
+func (h *GetPackageArtifactHandler) handle(w http.ResponseWriter, r *http.Request) {
 	scope := chi.URLParam(r, "scope")
 	name := chi.URLParam(r, "name")
 	version := chi.URLParam(r, "version")
 	path := chi.URLParam(r, "*")
 
-	res, err := h.getResourceUC.Execute(r.Context(), resource.GetResourceUCRequest{
+	res, err := h.uc.Execute(r.Context(), application.GetPackageArtifactRequest{
 		Name:         name,
 		Scope:        scope,
 		VersionQuery: version,
